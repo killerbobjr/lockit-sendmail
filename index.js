@@ -28,7 +28,7 @@ var Email = module.exports = function(config) {
  * @param {String} email
  * @param {Function} done
  */
-Email.prototype.send = function(type, username, email, done) {
+Email.prototype.send = function(type, username, email, token, done) {
   var config = this.config;
   var that = this;
 
@@ -43,7 +43,8 @@ Email.prototype.send = function(type, username, email, done) {
     var locals = {
       appname: config.appname,
       link: that.link,
-      username: username
+      username: username,
+	  token: token
     };
 
     // add options
@@ -77,8 +78,8 @@ Email.prototype.send = function(type, username, email, done) {
  */
 Email.prototype.signup = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.signup.route + '/' + token + '">' + c.emailSignup.linkText + '</a>';
-  this.send('emailSignup', username, email, done);
+  this.link = '<a href="' + c.url + c.signup.route + '/' + token + '?auth=false">' + c.emailSignup.linkText + '</a>';
+  this.send('emailSignup', username, email, token, done);
 };
 
 
@@ -93,8 +94,8 @@ Email.prototype.signup = function(username, email, token, done) {
  */
 Email.prototype.resend = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.signup.route + '/' + token + '">' + c.emailResendVerification.linkText + '</a>';
-  this.send('emailResendVerification', username, email, done);
+  this.link = '<a href="' + c.url + c.signup.route + '/' + token + '?auth=false">' + c.emailResendVerification.linkText + '</a>';
+  this.send('emailResendVerification', username, email, token, done);
 };
 
 
@@ -123,5 +124,5 @@ Email.prototype.taken = function(username, email, done) {
 Email.prototype.forgot = function(username, email, token, done) {
   var c = this.config;
   this.link = '<a href="' + c.url + c.forgotPassword.route + '/' + token + '">' + c.emailForgotPassword.linkText + '</a>';
-  this.send('emailForgotPassword', username, email, done);
+  this.send('emailForgotPassword', username, email, token, done);
 };
