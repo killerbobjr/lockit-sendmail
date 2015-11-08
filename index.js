@@ -126,3 +126,35 @@ Email.prototype.forgot = function(username, email, token, done) {
   this.link = '<a href="' + c.url + c.forgotPassword.route + '/' + token + '">' + c.emailForgotPassword.linkText + '</a>';
   this.send('emailForgotPassword', username, email, token, done);
 };
+
+
+
+/**
+ * Send email with link for email verification.
+ *
+ * @param {String} username
+ * @param {String} email
+ * @param {String} token
+ * @param {Function} done
+ */
+Email.prototype.change = function(username, email, token, done) {
+  var c = this.config;
+  this.link = '<a href="' + c.url + c.changeEmail.route + '/' + token + '">' + c.emailChangeEmail.linkText + '</a>';
+  this.send('emailChangeEmail', username, email, token, done);
+};
+
+
+
+/**
+ * Send email with link for email reset.
+ *
+ * @param {String} username
+ * @param {String} email
+ * @param {String} token
+ * @param {Function} done
+ */
+Email.prototype.reset = function(username, email, token, done) {
+  var c = this.config;
+  this.link = '<a href="' + c.url + c.changeEmail.route + '/' + token + '">' + c.emailResetEmail.linkText + '</a>';
+  this.send('emailResetEmail', username, email, token, done);
+};
