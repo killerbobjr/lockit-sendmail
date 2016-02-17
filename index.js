@@ -28,44 +28,50 @@ var Email = module.exports = function(config) {
  * @param {String} email
  * @param {Function} done
  */
-Email.prototype.send = function(type, username, email, token, done) {
-  var config = this.config;
-  var that = this;
+Email.prototype.send = function(type, username, email, token, done)
+{
+	var config = this.config;
+	var that = this;
 
-  var subject = config[type].subject;
-  var title = config[type].title;
-  var text = config[type].text;
+	var locals = JSON.parse(JSON.stringify(config[type]));
 
-  this.template(title, text, function(err, html) {
-    if (err) return done(err);
+	// default local variables
+	locals.appname = config.appname;
+	locals.path = config.templatefolder;
+	locals.link = that.link;
+	locals.username = username;
+	locals.token = token;
 
-    // default local variables
-    var locals = {
-      appname: config.appname,
-      link: that.link,
-      username: username,
-	  token: token
-    };
+	this.template(locals, function(err, html, text)
+		{
+			if (err)
+				return done(err);
+			else
+			{
+				// add options
+				var options = {
+					from: config.emailFrom,
+					to: email,
+					subject: ejs.render(locals.subject, locals),
+					html: html,
+					text: text
+				};
 
-    // add options
-    var options = {
-      from: config.emailFrom,
-      to: email,
-      subject: ejs.render(subject, locals),
-      html: ejs.render(html, locals)
-    };
-
-    // send email with nodemailer
-    var transporter = nodemailer.createTransport(that.transport(config.emailSettings));
-    transporter.sendMail(options, function(err, res){
-      if(err) return done(err);
-      transporter.close(); // shut down the connection pool, no more messages
-      done(null, res);
-    });
-  });
-
+				// send email with nodemailer
+				var transporter = nodemailer.createTransport(that.transport(config.emailSettings));
+				transporter.sendMail(options, function(err, res)
+					{
+						if (err)
+							return done(err);
+						else
+						{
+							transporter.close(); // shut down the connection pool, no more messages
+							done(null, res);
+						}
+					});
+			}
+		});
 };
-
 
 
 /**
@@ -78,7 +84,7 @@ Email.prototype.send = function(type, username, email, token, done) {
  */
 Email.prototype.signup = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.signup.route + '/' + token + '?auth=false">' + c.emailSignup.linkText + '</a>';
+  this.link = c.url + c.signup.route + '/' + token + '?auth=false';
   this.send('emailSignup', username, email, token, done);
 };
 
@@ -94,7 +100,7 @@ Email.prototype.signup = function(username, email, token, done) {
  */
 Email.prototype.resend = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.signup.route + '/' + token + '?auth=false">' + c.emailResendVerification.linkText + '</a>';
+  this.link = c.url + c.signup.route + '/' + token + '?auth=false';
   this.send('emailResendVerification', username, email, token, done);
 };
 
@@ -123,7 +129,7 @@ Email.prototype.taken = function(username, email, done) {
  */
 Email.prototype.forgot = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.forgotPassword.route + '/' + token + '">' + c.emailForgotPassword.linkText + '</a>';
+  this.link = c.url + c.forgotPassword.route + '/' + token;
   this.send('emailForgotPassword', username, email, token, done);
 };
 
@@ -139,7 +145,7 @@ Email.prototype.forgot = function(username, email, token, done) {
  */
 Email.prototype.change = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.changeEmail.route + '/' + token + '">' + c.emailChangeEmail.linkText + '</a>';
+  this.link = c.url + c.changeEmail.route + '/' + token;
   this.send('emailChangeEmail', username, email, token, done);
 };
 
@@ -155,6 +161,6 @@ Email.prototype.change = function(username, email, token, done) {
  */
 Email.prototype.reset = function(username, email, token, done) {
   var c = this.config;
-  this.link = '<a href="' + c.url + c.changeEmail.route + '/' + token + '">' + c.emailResetEmail.linkText + '</a>';
+  this.link = c.url + c.changeEmail.route + '/' + token;
   this.send('emailResetEmail', username, email, token, done);
 };
