@@ -37,6 +37,7 @@ Email.prototype.send = function(type, username, email, token, done)
 
 	// default local variables
 	locals.appname = config.appname;
+	locals.url = config.url;
 	locals.path = config.templatefolder;
 	locals.link = that.link;
 	locals.username = username;
