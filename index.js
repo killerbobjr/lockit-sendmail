@@ -41,6 +41,15 @@ Email.prototype.send = function(type, username, email, token, done)
 	locals.path = config.templatefolder;
 	locals.link = that.link;
 	locals.username = username;
+	locals.brand = config.brand;
+	locals.logo = config.logo;
+	locals.emailbodybackground = config.emailbodybackground;
+	locals.emailpanelbackground = config.emailpanelbackground;
+	locals.emailpaneltext = config.emailpaneltext;
+	locals.emailbuttonbackground = config.emailbuttonbackground;
+	locals.emailbuttontext = config.emailbuttontext;
+	locals.emaillinkhover = config.emaillinkhover;
+	locals.emaillinkactive = config.emaillinkactive;
 	locals.token = token;
 
 	this.template(locals, function(err, html, text)
