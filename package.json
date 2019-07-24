@@ -31,10 +31,10 @@
     "grunt": "^1.0.1",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-mocha-test": "^0.13.2",
-    "juice": "^4.0.2",
+    "juice": "^5.2.0",
     "lockit-template-blank": "git://github.com/killerbobjr/lockit-template-blank.git",
     "mimelib": "^0.3.0",
-    "mocha": "^3.2.0",
+    "mocha": "^6.2.0",
     "nodemailer-stub-transport": "^1.1.0",
     "should": "^11.2.1"
   }
