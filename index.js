@@ -54,6 +54,7 @@ Email.prototype.send = function(type, username, email, token, done)
 	locals.emaillink = config.emaillink;
 	locals.emaillinkhover = config.emaillinkhover;
 	locals.emaillinkactive = config.emaillinkactive;
+	locals.email = email;
 	locals.token = token;
 
 	this.template(locals, function(err, html, text)
@@ -125,10 +126,11 @@ Email.prototype.resend = function(username, email, token, done) {
  *
  * @param {String} username
  * @param {String} email
+ * @param {String} token (unused)
  * @param {Function} done
  */
-Email.prototype.taken = function(username, email, done) {
-  this.send('emailSignupTaken', username, email, done);
+Email.prototype.taken = function(username, email, token, done) {
+  this.send('emailSignupTaken', username, email, '', done);
 };
 
 
@@ -177,4 +179,20 @@ Email.prototype.reset = function(username, email, token, done) {
   var c = this.config;
   this.link = c.url + c.changeEmail.route + '/' + token;
   this.send('emailResetEmail', username, email, token, done);
+};
+
+
+
+/**
+ * Send invite email.
+ *
+ * @param {String} username
+ * @param {String} email
+ * @param {String} token (unused)
+ * @param {Function} done
+ */
+Email.prototype.invite = function(username, email, token, done) {
+  var c = this.config;
+  this.link = c.url + c.login.route;
+  this.send('emailInvite', username, email, '', done);
 };
