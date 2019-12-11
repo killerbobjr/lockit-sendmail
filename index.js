@@ -188,11 +188,11 @@ Email.prototype.reset = function(username, email, token, done) {
  *
  * @param {String} username
  * @param {String} email
- * @param {String} token (unused)
+ * @param {String} token
  * @param {Function} done
  */
 Email.prototype.invite = function(username, email, token, done) {
   var c = this.config;
-  this.link = c.url + c.login.route;
+  this.link = c.url + c.invite.route + token;
   this.send('emailInvite', username, email, '', done);
 };
