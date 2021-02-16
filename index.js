@@ -1,6 +1,5 @@
-
-var nodemailer = require('nodemailer');
-var ejs = require('ejs');
+var	nodemailer = require('nodemailer'),
+	ejs = require('ejs');
 
 
 
@@ -10,11 +9,15 @@ var ejs = require('ejs');
  * @constructor
  * @param {Object} config
  */
-var Email = module.exports = function(config) {
-  if (!(this instanceof Email)) return new Email(config);
-  this.template = require(config.emailTemplate);
-  this.transport = require(config.emailType);
-  this.config = config;
+var Email = module.exports = function(config)
+{
+	if(!(this instanceof Email))
+	{
+		return new Email(config);
+	}
+	this.template = require(config.emailTemplate);
+	this.transport = require(config.emailType);
+	this.config = config;
 };
 
 
@@ -58,34 +61,41 @@ Email.prototype.send = function(type, username, email, token, done)
 	locals.token = token;
 
 	this.template(locals, function(err, html, text)
+	{
+		if(err)
 		{
-			if (err)
-				return done(err);
-			else
-			{
-				// add options
-				var options = {
-					from: config.emailFrom,
-					to: email,
-					subject: ejs.render(locals.subject, locals),
-					html: html,
-					text: text
-				};
+			return done(err);
+		}
+		else
+		{
+			// add options
+			var delimiters = {
+				openDelimiter: '[',
+				closeDelimiter: ']'
+			};
 
-				// send email with nodemailer
-				var transporter = nodemailer.createTransport(that.transport(config.emailSettings));
-				transporter.sendMail(options, function(err, res)
-					{
-						if (err)
-							return done(err);
-						else
-						{
-							transporter.close(); // shut down the connection pool, no more messages
-							done(null, res);
-						}
-					});
-			}
-		});
+			var options = {
+				from: config.emailFrom,
+				to: email,
+				subject: ejs.render(locals.subject, locals, delimiters),
+				html: ejs.render(html, locals, delimiters),
+				text: ejs.render(text, locals, delimiters)
+			};
+
+			// send email with nodemailer
+			var transporter = nodemailer.createTransport(that.transport(config.emailSettings));
+			transporter.sendMail(options, function(err, res)
+			{
+				if(err)
+					return done(err);
+				else
+				{
+					transporter.close(); // shut down the connection pool, no more messages
+					done(null, res);
+				}
+			});
+		}
+	});
 };
 
 
@@ -97,10 +107,11 @@ Email.prototype.send = function(type, username, email, token, done)
  * @param {String} token
  * @param {Function} done
  */
-Email.prototype.signup = function(username, email, token, done) {
-  var c = this.config;
-  this.link = c.url + c.signup.route + '/' + token + '?auth=false';
-  this.send('emailSignup', username, email, token, done);
+Email.prototype.signup = function(username, email, token, done)
+{
+	var c = this.config;
+	this.link = c.url + c.signup.route + '/' + token + '?auth=false';
+	this.send('emailSignup', username, email, token, done);
 };
 
 
@@ -113,10 +124,11 @@ Email.prototype.signup = function(username, email, token, done) {
  * @param {String} token
  * @param {Function} done
  */
-Email.prototype.resend = function(username, email, token, done) {
-  var c = this.config;
-  this.link = c.url + c.signup.route + '/' + token + '?auth=false';
-  this.send('emailResendVerification', username, email, token, done);
+Email.prototype.resend = function(username, email, token, done)
+{
+	var c = this.config;
+	this.link = c.url + c.signup.route + '/' + token + '?auth=false';
+	this.send('emailResendVerification', username, email, token, done);
 };
 
 
@@ -129,8 +141,9 @@ Email.prototype.resend = function(username, email, token, done) {
  * @param {String} token (unused)
  * @param {Function} done
  */
-Email.prototype.taken = function(username, email, token, done) {
-  this.send('emailSignupTaken', username, email, '', done);
+Email.prototype.taken = function(username, email, token, done)
+{
+	this.send('emailSignupTaken', username, email, '', done);
 };
 
 
@@ -143,10 +156,11 @@ Email.prototype.taken = function(username, email, token, done) {
  * @param {String} token
  * @param {Function} done
  */
-Email.prototype.forgot = function(username, email, token, done) {
-  var c = this.config;
-  this.link = c.url + c.forgotPassword.route + '/' + token;
-  this.send('emailForgotPassword', username, email, token, done);
+Email.prototype.forgot = function(username, email, token, done)
+{
+	var c = this.config;
+	this.link = c.url + c.forgotPassword.route + '/' + token;
+	this.send('emailForgotPassword', username, email, token, done);
 };
 
 
@@ -159,10 +173,11 @@ Email.prototype.forgot = function(username, email, token, done) {
  * @param {String} token
  * @param {Function} done
  */
-Email.prototype.change = function(username, email, token, done) {
-  var c = this.config;
-  this.link = c.url + c.changeEmail.route + '/' + token;
-  this.send('emailChangeEmail', username, email, token, done);
+Email.prototype.change = function(username, email, token, done)
+{
+	var c = this.config;
+	this.link = c.url + c.changeEmail.route + '/' + token;
+	this.send('emailChangeEmail', username, email, token, done);
 };
 
 
@@ -175,10 +190,11 @@ Email.prototype.change = function(username, email, token, done) {
  * @param {String} token
  * @param {Function} done
  */
-Email.prototype.reset = function(username, email, token, done) {
-  var c = this.config;
-  this.link = c.url + c.changeEmail.route + '/' + token;
-  this.send('emailResetEmail', username, email, token, done);
+Email.prototype.reset = function(username, email, token, done)
+{
+	var c = this.config;
+	this.link = c.url + c.changeEmail.route + '/' + token;
+	this.send('emailResetEmail', username, email, token, done);
 };
 
 
@@ -191,8 +207,29 @@ Email.prototype.reset = function(username, email, token, done) {
  * @param {String} token
  * @param {Function} done
  */
-Email.prototype.invite = function(username, email, token, done) {
-  var c = this.config;
-  this.link = c.url + c.invite.route + token;
-  this.send('emailInvite', username, email, '', done);
+Email.prototype.invite = function(username, email, token, done)
+{
+	var c = this.config;
+	this.link = c.url + c.invite.route + token;
+	this.send('emailInvite', username, email, '', done);
+};
+
+
+
+/**
+ * Send two-factor password email.
+ *
+ * @param {String} username
+ * @param {String} email
+ * @param {String} token
+ * @param {Function} done
+ */
+Email.prototype.twoFactor = function(username, email, token, done)
+{
+	var c = this.config;
+	if(c.twoFactorRoute.linkText && c.twoFactorRoute.linkText.length)
+	{
+		this.link = c.url + c.twoFactorRoute + '/' + token + '?email=' + email;
+	}
+	this.send('twoFactor', username, email, token, done);
 };
