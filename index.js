@@ -15,8 +15,8 @@ var Email = module.exports = function(config)
 	{
 		return new Email(config);
 	}
-	this.template = require(config.emailTemplate);
-	this.transport = require(config.emailType);
+	this.template = require(config.mail.emailTemplate);
+	this.transport = require(config.mail.emailType);
 	this.config = config;
 };
 
@@ -41,7 +41,7 @@ Email.prototype.send = function(type, username, email, token, done)
 	// default local variables
 	locals.appname = config.appname;
 	locals.url = config.url;
-	locals.path = config.templatefolder;
+	locals.path = config.mail.templatefolder;
 	locals.link = that.link;
 	locals.username = username;
 	locals.brand = config.brand;
@@ -83,7 +83,7 @@ Email.prototype.send = function(type, username, email, token, done)
 			};
 
 			// send email with nodemailer
-			var transporter = nodemailer.createTransport(that.transport(config.emailSettings));
+			var transporter = nodemailer.createTransport(that.transport(config.mail.emailSettings));
 			transporter.sendMail(options, function(err, res)
 			{
 				if(err)
@@ -227,9 +227,9 @@ Email.prototype.invite = function(username, email, token, done)
 Email.prototype.twoFactor = function(username, email, token, done)
 {
 	var c = this.config;
-	if(c.twoFactorRoute.linkText && c.twoFactorRoute.linkText.length)
+	if(c.login.twoFactorRoute.linkText && c.login.twoFactorRoute.linkText.length)
 	{
-		this.link = c.url + c.twoFactorRoute + '/' + token + '?email=' + email;
+		this.link = c.url + c.login.twoFactorRoute + '/' + token + '?email=' + email;
 	}
 	this.send('twoFactor', username, email, token, done);
 };
